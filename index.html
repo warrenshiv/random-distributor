@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Picker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+            font-size: 1em;
+        }
+        .result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Number Picker</h1>
+        <input type="email" id="email" placeholder="Enter your email" />
+        <button id="pickNumberBtn">Pick a Number</button>
+        <div class="result" id="resultMessage"></div>
+        <div id="finalResults"></div>
+        <button id="showResultsBtn">Show All Results</button>
+    </div>
+
+    <script>
+        const pickNumberBtn = document.getElementById("pickNumberBtn");
+        const resultMessage = document.getElementById("resultMessage");
+        const showResultsBtn = document.getElementById("showResultsBtn");
+        const finalResults = document.getElementById("finalResults");
+
+        // Update API URL to use the correct port (5000)
+        const apiUrl = "http://127.0.0.1:5000";
+
+        pickNumberBtn.addEventListener("click", () => {
+            const email = document.getElementById("email").value;
+
+            if (email) {
+                fetch(`${apiUrl}/select_number`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email: email })
+                })
+                .then(response => response.json())  // Parse the JSON response
+                .then(data => {
+                    resultMessage.textContent = data.message;
+                    resultMessage.style.color = data.status === "success" ? "green" : "red";
+                })
+                .catch(error => {
+                    resultMessage.textContent = "An error occurred. Please try again.";
+                    resultMessage.style.color = "red";
+                    console.error('Error:', error);
+                });
+            } else {
+                resultMessage.textContent = "Please enter a valid email.";
+                resultMessage.style.color = "red";
+            }
+        });
+
+        showResultsBtn.addEventListener("click", () => {
+            fetch(`${apiUrl}/show_results`)
+            .then(response => response.json())
+            .then(data => {
+                let resultHTML = "<h3>Final Results</h3><ul>";
+                for (let [name, number] of Object.entries(data)) {
+                    resultHTML += `<li>${name}: ${number}</li>`;
+                }
+                resultHTML += "</ul>";
+                finalResults.innerHTML = resultHTML;
+            })
+            .catch(error => {
+                finalResults.textContent = "An error occurred. Please try again.";
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
