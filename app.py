@@ -1,53 +1,70 @@
 from flask import Flask, jsonify, request
+from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
 
 app = Flask(__name__)
-CORS(app)  # This will allow all origins by default
+CORS(app)  # Enable CORS
 
-# Generate 30 random email addresses for testing
-def generate_random_emails(num):
-    emails = []
-    for i in range(1, num + 1):
-        emails.append(f"member{i}@example.com")
-    return emails
+# Database configuration
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///number_picker.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Disable modification tracking for performance
 
-# List of randomly generated members (emails)
-members = {email: f"Member {i+1}" for i, email in enumerate(generate_random_emails(30))}
+db = SQLAlchemy(app)  # Initialize the database
 
-# List of available numbers from 1 to 30
+# Model for the User table
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    number = db.Column(db.Integer, nullable=False)
+
+# Create the database tables
+with app.app_context():
+    db.create_all()
+
+# In-memory data
+members = {f"member{i}@example.com": f"Member {i}" for i in range(1, 31)}
 available_numbers = list(range(1, 31))
-
-# Dictionary to store selected numbers for each member
 selected_numbers = {}
 
-# Function to verify the identity using email
+# Function to verify if the email exists in the system
 def verify_email(email):
     return email in members
 
-# API to select a random number
+# API to select a random number and save it to the database
 @app.route('/select_number', methods=['POST'])
 def select_number():
-    global available_numbers, selected_numbers
-
     data = request.json
     email = data.get('email')
 
     if email and verify_email(email):
-        if email not in selected_numbers:
+        # Check if the user has already selected a number
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            return jsonify({"message": f"{members[email]} has already selected number {existing_user.number}!", "status": "error"}), 400
+        
+        # Select a random number
+        if available_numbers:
             chosen_number = random.choice(available_numbers)
             available_numbers.remove(chosen_number)
             selected_numbers[email] = chosen_number
+            
+            # Save the selected number in the database
+            new_user = User(email=email, number=chosen_number)
+            db.session.add(new_user)
+            db.session.commit()
+
             return jsonify({"message": f"{members[email]} has selected number {chosen_number}.", "status": "success", "number": chosen_number}), 200
         else:
-            return jsonify({"message": f"{members[email]} has already selected a number!", "status": "error"}), 400
+            return jsonify({"message": "No more numbers available.", "status": "error"}), 400
     else:
         return jsonify({"message": "Invalid email. Please try again.", "status": "error"}), 400
 
-# API to show the final selected numbers
+# API to show the final selected numbers from the database
 @app.route('/show_results', methods=['GET'])
 def show_results():
-    results = {members[email]: number for email, number in selected_numbers.items()}
+    users = User.query.all()
+    results = {user.email: user.number for user in users}
     return jsonify(results)
 
 if __name__ == '__main__':
