@@ -5,24 +5,107 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Number Picker</title>
     <style>
+        /* General Styles */
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7fc;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            font-size: 2.5em;
+            color: #4CAF50;
+            margin-bottom: 20px;
         }
         .container {
             max-width: 400px;
-            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
-        input, button {
-            padding: 10px;
-            margin: 10px 0;
+
+        /* Form Elements */
+        input[type="email"] {
+            padding: 12px;
+            width: calc(100% - 24px);
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            transition: border-color 0.3s ease;
+        }
+        input[type="email"]:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+        button {
+            padding: 12px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
             width: 100%;
-            font-size: 1em;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease, transform 0.3s ease;
         }
+        button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+
+        /* Results Section */
         .result {
             margin-top: 20px;
             font-weight: bold;
+            font-size: 1.2em;
+            color: #333;
+        }
+        .result.success {
+            color: #4CAF50;
+        }
+        .result.error {
+            color: #e74c3c;
+        }
+
+        /* Results List */
+        #finalResults ul {
+            padding: 0;
+            list-style: none;
+            margin: 20px 0 0 0;
+        }
+        #finalResults ul li {
+            padding: 8px;
+            background-color: #f1f1f1;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            color: #555;
+        }
+
+        /* Button for Showing Results */
+        #showResultsBtn {
+            margin-top: 20px;
+            background-color: #007BFF;
+        }
+        #showResultsBtn:hover {
+            background-color: #0069d9;
+        }
+
+        /* Media Queries for Responsive Design */
+        @media (max-width: 500px) {
+            .container {
+                width: 90%;
+            }
+            h1 {
+                font-size: 2em;
+            }
         }
     </style>
 </head>
@@ -59,16 +142,16 @@
                 .then(response => response.json())  // Parse the JSON response
                 .then(data => {
                     resultMessage.textContent = data.message;
-                    resultMessage.style.color = data.status === "success" ? "green" : "red";
+                    resultMessage.className = `result ${data.status === "success" ? "success" : "error"}`;
                 })
                 .catch(error => {
                     resultMessage.textContent = "An error occurred. Please try again.";
-                    resultMessage.style.color = "red";
+                    resultMessage.className = "result error";
                     console.error('Error:', error);
                 });
             } else {
                 resultMessage.textContent = "Please enter a valid email.";
-                resultMessage.style.color = "red";
+                resultMessage.className = "result error";
             }
         });
 
