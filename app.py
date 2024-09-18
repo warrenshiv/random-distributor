@@ -22,9 +22,26 @@ class User(db.Model):
 with app.app_context():
     db.create_all()
 
+# List of provided email addresses
+member_emails = [
+    "adegoshadracktrap@gmail.com",
+    "felixshigx7@gmail.com",
+    "esthercherotich199@gmail.com",
+    "lucymillie580@gmail.com",
+    "warrenshiv@gmail.com",
+    "Shigolidarius062@gmail.com",
+    "raelouma@gmail.com",
+    "delfredricluyenji@gmail.com",
+    "marthaalimlim1@gmail.com",
+    "jecintahnjoki94@gmail.com",
+    "ayesajenty@gmail.com",
+    "sarahchelagat87@gmail.com",
+    "Mosesokiri29@gmail.com"
+]
+
 # In-memory data
-members = {f"member{i}@example.com": f"Member {i}" for i in range(1, 31)}
-available_numbers = list(range(1, 31))
+members = {email: f"Member {i+1}" for i, email in enumerate(member_emails)}
+available_numbers = list(range(1, len(member_emails) + 1))
 selected_numbers = {}
 
 # Function to verify if the email exists in the system
