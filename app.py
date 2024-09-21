@@ -42,7 +42,8 @@ member_emails = [
     "Lynelinsley@gmail.com",
     "linettewanjiru17@gmail.com",
     "evelynatemba19@gmail.com",
-    "isaackiprono27@gmail.com"
+    "isaackiprono27@gmail.com",
+    "annmajimbo5@gmail.com"
 ]
 
 # In-memory data
