@@ -36,7 +36,13 @@ member_emails = [
     "jecintahnjoki94@gmail.com",
     "ayesajenty@gmail.com",
     "sarahchelagat87@gmail.com",
-    "Mosesokiri29@gmail.com"
+    "Mosesokiri29@gmail.com",
+    "naomgesare81@gmail.com",
+    "alicelooremetto@gmail.com",
+    "Lynelinsley@gmail.com",
+    "linettewanjiru17@gmail.com",
+    "evelynatemba19@gmail.com",
+    "isaackiprono27@gmail.com"
 ]
 
 # In-memory data
